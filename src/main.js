@@ -26,11 +26,15 @@ function Guessing(letter, wordArray) {
       $(".space" + [i]).text(letter);
     }
   }
+  if (wordArray.includes(letter) === false) {
+    counter ++;
+  }
   $("#input").val("");
 }
 
 $(document).ready(function() {
   let wordArray = [];
+  let counter = 0;
   $("#dinoSubmit").click(function() {
     //clearFields();
     let promise = DinoIpsum.getDinoIpsum();
