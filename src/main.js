@@ -14,44 +14,59 @@ function StartUp(wordArray) {
   }
 }
 
-function Guessing(letter, wordArray) {
-  if (letter === "") {
+function Guessing(letter, wordArray, counter, correctLetter) {
+  if (letter === " " || letter === "") {
     alert("Please enter a letter.");
-    return;
+    return counter;
+  } else if (correctLetter.includes(letter)) {
+    alert("Please enter a different letter.");
+    return counter;
   }
+ 
   $(".guessed").append(letter + "  ");
+  
+  if (wordArray.includes(letter) == false) {
+    counter[0]++;
+    if (counter[0] > 10) {
+      alert("You lose. Wamp wamp.");
+      location.reload();
+    }
+    return counter;
+  }
+  
   for(let i = 0; i < wordArray.length; i++) {
     if (wordArray[i].includes(letter)) {
       $(".space" + [i]).empty();
       $(".space" + [i]).text(letter);
+      correctLetter.push(letter);
+      counter[1]++;
+      if (correctLetter.length === wordArray.length) {
+        alert("You win nothing, but you still win.");
+        location.reload();
+      }
     }
   }
-  if (wordArray.includes(letter) === false) {
-    counter ++;
-  }
-  $("#input").val("");
+  return counter;
 }
 
 $(document).ready(function() {
   let wordArray = [];
-  let counter = 0;
+  let counter = [0,0];
+  let correctLetter = [];
   $("#dinoSubmit").click(function() {
-    //clearFields();
     let promise = DinoIpsum.getDinoIpsum();
     promise.then(function(response) {
       const body = JSON.parse(response);
-      console.log(body);
       wordArray = body[0][0].toUpperCase().split("");
       console.log(wordArray);
       StartUp(wordArray);
-
- //   }, function(error) {
- //    $(".showErrors").text(`ERROR!`)
     });
   });
   $('#guessButton').click(function(){
     let letter = $("#input").val();
     letter = letter.toUpperCase();
-    Guessing(letter, wordArray);
+    counter = Guessing(letter, wordArray, counter, correctLetter);
+    $("#input").val("");
+    console.log(counter);
   });
 });
